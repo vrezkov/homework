@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+// ax^2 + bx + c = 0 - квадратное уравнение
+// a и b - коэффициенты
+// с - сводобный член
+// x - корень
+// для нахождения корней, нужно вычислить дискриминант
+// D = b^2 - 4ac - дискриминант
+// если D > 0 - корней 2
+// если D = 0 - корень 1
+// если D < 0 - корней нет
+// Math.pow(base, exponent)
+// base — число, которое возводится в степень, exponent — степень, в которую нужно возвести
+// или по ES6: const result = 5 ** 2;
+// Math.sqrt(9); // 3 - извлечение квадратного корня
+// Math.abs(-2); // 2 - возвращает абсолютное значение числа
+
+var a = 1;
+var b = 12;
+var c = 36;
+var x1;
+var x2;
+var D = b ** 2 - 4 * a * c;
+
+var bAbsolute, cAbsolute;
+var aResult, bResult, cResult;
+
+if (a == 1) {
+    aResult = "";
+} else if (a == -1) {
+    aResult = " -";
+} else {
+    aResult = a;
+}
+
+bAbsolute = Math.abs(b);
+if (b > 0) {
+    bResult = ` + ${b}`;
+} else if (b == 1) {
+    bResult = " + ";
+} else if (b == -1) {
+    bResult = " - ";
+} else {
+    bResult = ` - ${bAbsolute}`;
+}
+
+cAbsolute = Math.abs(c);
+if (c > 0) {
+    cResult = ` + ${c}`;
+} else if (c == 0) {
+    cResult = "";
+} else {
+    cResult = ` - ${cAbsolute}`;
+}
+
+var equation = `${aResult}x^2${bResult}x${cResult} = 0`;
+
+var result;
+
+function quadraticEquation(){
+    if (D > 0) {
+        x1 = ( -b + Math.sqrt(D) ) / (2 * a);
+        x2 = ( -b - Math.sqrt(D) ) / (2 * a);
+        result = `уравнение ${equation} имеет корни x1 = ${x1}, x2 = ${x2}`;
+    } else if (D == 0) {
+        x1 = x2 = - (b / 2 * a);
+        result = `уравнение ${equation} имеет один корень x = ${x1}`;
+    } else if (D < 0) {
+        // x1 = x2 = "no solution";
+        result = `уравнение ${equation} не имеет вещественных корней`;
+    }
+}
+
+quadraticEquation();
+
+console.log(result);
+
+    </script>
+</body>
+</html>
