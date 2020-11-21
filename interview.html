@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+var name, nameLength, nameResult;
+var hasNumber;
+var patronymic, patronymicLength, patronymicResult;
+var surname, surnameResult;
+var ageYears, ageYearsResult;
+var ageDays;
+var gender, genderResult;
+var isAdult;
+var onPension;
+var message;
+
+do {
+    name = prompt("Введите ваше имя");
+    nameLength = name.length;
+    hasNumber = /\d/g;
+} while (
+    name == "" || hasNumber.test(name) == true || nameLength <= 1 || nameLength >= 25
+);
+
+do {
+    patronymic = prompt("Введите ваше отчество");
+    patronymicLength = patronymic.length;
+    hasNumber = /\d/g;
+} while (
+    patronymic == "" || hasNumber.test(patronymic) == true || patronymicLength <= 1 || patronymicLength >= 25
+);
+
+do {
+    surname = prompt("Введите вашу фамилию");
+    surnameLength = surname.length;
+    hasNumber = /\d/g;
+} while (
+    surname == "" || hasNumber.test(surname) == true || surnameLength <= 1 || surnameLength >= 25
+);
+
+nameResult = name.charAt(0).toUpperCase() + name.slice(1);
+patronymicResult = patronymic.charAt(0).toUpperCase() + patronymic.slice(1);
+surnameResult = surname.charAt(0).toUpperCase() + surname.slice(1);
+
+do {
+    ageYears = prompt("Введите ваш возраст\n(цифрами)");
+    ageYearsLength = ageYears.length;
+} while (
+    ageYears == "" || isNaN(ageYears) || ageYears <= 0 || ageYearsLength > 3
+);
+
+ageYearsResult = parseInt(ageYears);
+
+ageDays = ageYearsResult * 365;
+
+if (ageYearsResult > 18 ) {
+    isAdult = "\nВы уже совершеннолетний";
+} else {
+    isAdult = "";
+}
+
+gender = confirm("Ваш пол - женский?");
+if (gender == true) {
+    genderResult = "женский";
+} else {
+    genderResult = "мужской";
+}
+
+if (ageYears >= 60 ) {
+    onPension = "да"
+} else {
+    onPension = "нет"
+}
+
+message =
+"Ваше ФИО: "+nameResult+" "+patronymicResult+" "+surnameResult+
+"\nВаш возраст в годах: "+ageYearsResult+
+"\nВаш возраст в днях: "+ageDays+
+isAdult+
+"\nВаш пол: "+genderResult+
+"\nВы на пенсии: "+onPension;
+
+alert(message);
+
+    </script>
+</body>
+</html>
