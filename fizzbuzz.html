@@ -13,10 +13,12 @@ let i = 1;
 
 function fizzBuzz(){
   while (i <= 100) {
-    // result = ((i % 3 == 0 ) && (i % 5 == 0) && "FizzBuzz") || ((i % 3 == 0) && "Fizz") || ((i % 5 == 0) && "Buzz") || i;
+    
     // console.log(4 % 2); expected output: 0 // 0 - falsy // !0 = true
     // && - if this operator is used with non-Boolean values, it will return a non-Boolean value
     // || - logical expressions are evaluated left to right
+    // result = ((i % 3 == 0 ) && (i % 5 == 0) && "FizzBuzz") || ((i % 3 == 0) && "Fizz") || ((i % 5 == 0) && "Buzz") || i;
+    
     result = (!(i % 3) && !(i % 5) && "FizzBuzz") || (!(i % 3) && "Fizz") || (!(i % 5) && "Buzz") || i;
     console.log(result);
     i++;
