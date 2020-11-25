@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        const vowelsArray = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я", "А", "Е", "Ё", "И", "О", "У", "Ы", "Э", "Ю", "Я"];
+
+        function countVowelLetters(stringToTest) {
+            let vowelsLength = 0;
+            for (let i = 0; i < stringToTest.length ; i++) {                
+                if (vowelsArray.indexOf(stringToTest[i]) !== -1)
+                    vowelsLength++;
+                }
+            console.log(`Количество гласных = ${vowelsLength}`);
+        }
+
+        countVowelLetters("Пришла зима, запахло…");
+        countVowelLetters("Ghbdtn, z r dfvbpHjccbb");
+        countVowelLetters("длинношеее");
+        countVowelLetters("Не будете ли Вы так любезны, Иван, передать мне блокнот и «Известия»");
+
+    </script>
+</body>
+</html>
