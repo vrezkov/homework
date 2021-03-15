@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+
+// circle = 2 * Pi * radians
+// circle = 360 degrees
+// 1 radian = degree * (Pi / 180)
+// arc 0 <-- start angle
+// 2 * Math.PI <-- end angle
+
+document.body.style.cssText = `height: 100vh; min-height: 100vh; margin: 0 auto; background-color: #111;
+    display: flex; align-items: center; justify-content: center;`;
+
+// ======= Create canvas =======
+let canvas = document.createElement("canvas");
+canvas.setAttribute("id", "clock");
+canvas.setAttribute("width", "460");
+canvas.setAttribute("height", "460");
+document.body.appendChild(canvas);
+
+let ctx = clock.getContext("2d");
+let x = clock.width / 2;
+let y = clock.height / 2;
+
+function drawClock() {
+
+  // ======= Clock face wrapper =======
+  ctx.beginPath();
+  ctx.arc(x, y, x - 2, 0, 2 * Math.PI);
+  ctx.fillStyle = "#123";
+  ctx.fill();
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = "2";
+  ctx.stroke();
+  ctx.closePath();
+
+  // ======= Clock face =======
+  let newRadius = x - 2 - 35;
+
+  ctx.beginPath();
+  ctx.arc(x, y, newRadius, 0, 2 * Math.PI);
+  ctx.fillStyle = "#123";
+  ctx.fill();
+  ctx.closePath();
+
+  // ======= Clock tick circles and numbers =======
+  let ownRadius = 24;
+
+  // ======= Clock tick circles =======
+  ctx.beginPath();
+  for (let i = 0; i < 12; i++) {
+
+      let angle = 90 + (i * (360 / 12));
+      let radian = angle * Math.PI / 180;
+
+      ctx.rotate(radian);
+      ctx.translate(-(newRadius - ownRadius), 0);
+      ctx.rotate(-radian);
+      ctx.arc(x, y, ownRadius, 0, 2 * Math.PI);
+      ctx.rotate(radian);
+      ctx.translate(newRadius - ownRadius, 0);
+      ctx.rotate(-radian);
+      ctx.fillStyle = "#ccc";
+      ctx.fill();
+      ctx.closePath();
+  }
+
+  // ======= Clock tick numbers =======
+  ctx.beginPath();
+      for (let i = 1; i < 13; i++) {
+
+      let angle = 90 + (i * (360 / 12));
+      let radian = angle * Math.PI / 180;
+
+      ctx.font = "700 28px Arial";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#123";
+      ctx.rotate(radian);
+      ctx.translate(-(newRadius - ownRadius), 0);
+      ctx.rotate(-radian);
+      ctx.fillText(i, x, y + 2);
+      ctx.rotate(radian);
+      ctx.translate(newRadius - ownRadius, 0);
+      ctx.rotate(-radian);
+      ctx.closePath();
+  }
+
+  // ======= Time =======
+
+  const now = new Date();
+
+  let hours = now.getHours();
+  let minutes = now.getMinutes();
+  let seconds = now.getSeconds();
+
+  ctx.translate(x, y);
+
+  // ======= Hand for hours =======
+  let handHoursWidth = 10;
+  let handHoursTail = 10;
+  let handHoursHeight = 100;
+  ctx.beginPath();
+  ctx.rotate(((hours / 12) + (minutes / 720)) * 2 * Math.PI);
+  ctx.moveTo(0, handHoursTail);
+  ctx.lineWidth = handHoursWidth;
+  ctx.lineTo(0, -handHoursHeight);
+  ctx.lineCap = "round";
+  ctx.fillStyle = "#ccc";
+  ctx.strokeStyle = "#ccc";
+  ctx.stroke();
+  ctx.rotate(((hours / 12) + (minutes / 720)) * -2 * Math.PI);
+  ctx.closePath();
+
+  // ======= Hand for minutes =======
+  let handMinutesWidth = 8;
+  let handMinutesTail = 11;
+  let handMinutesHeight = 121;
+  ctx.beginPath();
+  ctx.rotate(((minutes / 60) ) * (2 * Math.PI));
+  ctx.moveTo(0, handMinutesTail);
+  ctx.lineWidth = handMinutesWidth;
+  ctx.lineTo(0, -handMinutesHeight);
+  ctx.lineCap = "round";
+  ctx.fillStyle = "#000";
+  ctx.strokeStyle = "#000";
+  ctx.stroke();
+  ctx.rotate(((minutes / 60) ) * -2 * Math.PI);
+  ctx.closePath();
+
+  // ======= Hand for seconds =======
+  let handSecondsWidth = 2;
+  let handSecondsTail = 19;
+  let handSecondsHeight = 139;
+  ctx.beginPath();
+  ctx.rotate(((seconds / 60) ) * (2 * Math.PI));
+  ctx.moveTo(0, handSecondsTail);
+  ctx.lineWidth = handSecondsWidth;
+  ctx.lineTo(0, -handSecondsHeight);
+  ctx.lineCap = "round";
+  ctx.fillStyle = "#ff0000";
+  ctx.strokeStyle = "#ff0000";
+  ctx.stroke();
+  ctx.rotate(((seconds / 60) ) * -2 * Math.PI);
+  ctx.closePath();
+
+  ctx.translate(-x, -y);
+
+  // ======= Screw =======
+  ctx.beginPath();
+  ctx.arc(x, y, 8, 0, 2 * Math.PI);
+  ctx.fillStyle = "#555";
+  ctx.fill();
+  ctx.closePath();
+
+  // ======= Digital clock =======
+  let dSeconds, dMinutes, dHours;
+
+    // ======= Seconds =======
+    if (seconds < 10) {
+      dSeconds = "0" + seconds;
+    } else {
+      dSeconds = seconds;
+    }
+
+    // ======= Minutes =======
+    if (minutes < 10) {
+      dMinutes = "0" + minutes;
+    } else {
+      dMinutes = minutes;
+    }
+
+    // ======= Hours =======
+    if (hours < 10) {
+      dHours = "0" + hours;
+    } else {
+      dHours = hours;
+    }
+
+    ctx.beginPath();
+    ctx.font = "28px Courier New";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#fff";
+    ctx.fillText(`${dHours}:${dMinutes}:${dSeconds}`, x, y - y / 3);
+    ctx.closePath();
+
+}
+
+setInterval(drawClock, 1000 / 60);
+
+</script>
+
+</body>
+</html>
