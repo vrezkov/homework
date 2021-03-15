@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+	<script>
+
+	function currypow(pow) {
+		return function(base) {
+			return function(exponent) {
+				let result = 1;
+				if (exponent < 0) {
+					for (let i = exponent; i < 0; i++) {
+						result /= base;
+					}
+				} else {
+					for (let i = 1; i <= exponent; i++) {
+						result *= base;
+					}
+				}
+				console.log(+base+"^"+exponent+" = "+result); 
+			}
+		}
+	}
+	let pow = currypow();
+
+	function currycalculate(calculate) {
+		return function(operand1) {
+			return function(operator) {
+				return function(operand2) {
+					let result = "";
+					if (operator == "+") {
+						result = operand1 + operand2;
+					}
+					if (operator == "*") {
+						result = operand1 * operand2;
+					}
+					if (operator == "/") {
+						result = operand1 / operand2;
+					}
+					if (operator == "/" && operand2 == 0) {
+						result = "Ошибка (на ноль делить нельзя)";
+					}
+					console.log(+operand1+operator+operand2+" = "+result);
+				}
+			}
+		}
+	}
+	let calculate = currycalculate();
+
+	pow(-2)(3);
+	calculate(1)("+")(2);
+
+	pow(4)(2);
+	calculate(3)("*")(7);
+
+	pow(16)(0);
+	calculate(15)("/")(3);
+
+	pow(2)(-3);
+	calculate(2)("/")(0);
+
+	</script>
+
+</body>
+</html>
