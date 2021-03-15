@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+
+  function getCounter(a) {
+    let obj = {
+      val: a,
+      log() {
+        console.log(this.val);
+        return this;
+      },
+      count(b) {
+        this.val = this.val + b;
+        return this;
+      },
+      reset() {
+        this.val = 0;
+        return this;
+      }
+    }
+    return obj;
+  }
+
+  let counter = getCounter(5);
+  counter.log().count(4).log().count(3).log().reset().log().count(8).log();
+
+  // counter.log() // 5
+  // .count(4)
+  //   .log() // 9
+  // .count(3)
+  //   .log() // 12
+  // .reset()
+  // .log() // 0
+  // .count(8)
+  //   .log(); // 8
+
+</script>
+
+</body>
+</html>
