@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+		
+		function quadraticEquation(a, b, c){
+
+			let D, x1, x2, result;
+			let aResult, bResult, cResult;
+			let bAbsolute, cAbsolute;
+			
+			D = b ** 2 - 4 * a * c;
+
+			if (a == 1) {
+				aResult = "";
+			} else if (a == -1) {
+				aResult = " -";
+			} else {
+				aResult = a;
+			}
+
+			bAbsolute = Math.abs(b);
+			if (b > 0) {
+				bResult = ` + ${b}`;
+			} else if (b == 1) {
+				bResult = " + ";
+			} else if (b == -1) {
+				bResult = " - ";
+			} else {
+				bResult = ` - ${bAbsolute}`;
+			}
+
+			cAbsolute = Math.abs(c);
+			if (c > 0) {
+				cResult = ` + ${c}`;
+			} else if (c == 0) {
+				cResult = "";
+			} else {
+				cResult = ` - ${cAbsolute}`;
+			}
+
+			let equation = `${aResult}x^2${bResult}x${cResult} = 0`;
+
+			if (D > 0) {
+				x1 = ( -b + Math.sqrt(D) ) / (2 * a);
+				x2 = ( -b - Math.sqrt(D) ) / (2 * a);
+				result = `уравнение ${equation} имеет корни x1 = ${x1}, x2 = ${x2}`;
+			} else if (D == 0) {
+				x1 = x2 = - (b / 2 * a);
+				result = `уравнение ${equation} имеет один корень x = ${x1}`;
+			} else if (D < 0) {
+				result = `уравнение ${equation} не имеет вещественных корней`;
+			}
+			
+			console.log(result);
+		}
+
+		quadraticEquation(-1, -8, 72);
+		quadraticEquation(1, 12, 36);
+		quadraticEquation(4, -8, -1);
+
+    </script>
+</body>
+</html>
