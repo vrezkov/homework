@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+<style>
+  input[type=button] {
+    background-color: #345;
+    border-radius: 6px;
+    display: block;
+    margin: 20px auto;
+    width: 400px;
+    border: 0 none;
+    color: #fff;
+    padding: 16px 32px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    outline: none;
+  }
+</style>
+
+<input type="button" class="btn" value="Нажми сюда!">
+<input type="button" class="btn" value="И сюда давай жми!">
+<input type="button" class="btn" value="Кликни меня!">
+<input type="button" class="btn" value="Нажми и узнай ВСЁ!">
+
+<script>
+
+  function count() {
+    
+    let buttons = document.getElementsByClassName("btn");
+    
+    function countClicks() {
+      let click = 0;
+      return function collectClicks() {
+        click++;
+        return click;
+      };
+    }
+    
+    for (let i = 0; i < buttons.length; i++) {
+      let clicksCounter = countClicks();
+      buttons[i].onclick = function() {
+        buttons[i].value = clicksCounter();       
+      }
+    }
+    
+  }
+
+  count();
+
+  </script>
+
+</body>
+</html>
