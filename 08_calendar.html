@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+
+let curDate, curYear, curMonth, monthDay, firstMonthDate, numberOfMonthDays, numberOfMonthWeeks, lastMonthDate,
+curWeekDay, userMonth, userYear;
+let hasZero = /^0/; let isNumber = /\d/;
+
+function initCalendar() {
+    do {
+        userMonth = prompt("Введите номер месяца\n(цифрами от 1 до 12)", "");
+    } while (userMonth === null ||
+        isNumber.test(userMonth) == false ||
+        hasZero.test(userMonth) == true ||
+        userMonth < 1 ||
+        userMonth > 12 ||
+        userMonth.length < 1 ||
+        userMonth.length > 2);
+    do {
+        userYear = prompt("Введите год (цифрами).\nНапример: 2020", "");
+    } while (userYear === null ||
+        isNumber.test(userYear) == false ||
+        userYear < 1970 ||
+        userYear > 2300 ||
+        userYear.length < 4 ||
+        userYear.length > 4);
+    curYear = userYear;
+    curMonth = userMonth - 1;
+    showCalendar(curYear, curMonth);
+}
+
+const weekDaysNames = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+const monthsNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+// ============== CREATE CALENDAR ==============
+
+function showCalendar(curYear, curMonth) {
+
+    // ======= Current date details =======
+    curDate = new Date(curYear, curMonth );
+    //curYear = curDate.getFullYear(); // 2020
+    curMonth = curDate.getMonth(); // 0-11
+    curMonthDay = curDate.getDate(); // 1-31
+    curWeekDay = curDate.getDay(); // 0-6
+    console.log(curYear, curMonth, curMonthDay, curWeekDay);
+
+    // ======= Any month days =======
+    firstMonthDate = new Date(curYear, curMonth, 1); // Tue Dec 01 2020 00:00:00 GMT+0300 (Москва, стандартное время)
+    firstMonthDay = firstMonthDate.getDate(); // 1
+    firstMonthDateWeekDay = firstMonthDate.getDay(); // 2
+
+    lastMonthDate = new Date(curYear, curMonth + 1, 0); // Thu Dec 31 2020 00:00:00 GMT+0300 (Москва, стандартное время)
+    lastMonthDay = lastMonthDate.getDate(); // 31
+    lastMonthDateWeekDay = lastMonthDate.getDay(); // 4
+
+    numberOfMonthDays = lastMonthDay; // 31
+
+    // ======= Previous year and month =======
+    prevYear = curYear - 1;
+    if (curMonth === 0 ) {
+        prevMonth = 11;
+    // curYear = prevYear;
+    } else {
+        prevMonth = curMonth - 1;
+    }
+    prevMonthDate = new Date(prevYear, prevMonth + 1, 0);
+    prevMonthLastMonthDay = prevMonthDate.getDate(); // 31
+
+    // ======= Next month and year =======
+    nextYear = curYear + 1;
+    if (curMonth === 11) {
+        nextMonth = 0;
+    // curYear = nextYear;
+    } else {
+        nextMonth = curMonth + 1;
+    }
+    nextMonthDate = new Date(nextYear, nextMonth, 1);
+    nextMonthFirstMonthDay = nextMonthDate.getDate(); // 31
+
+    // ======= Number of weeks =======
+    let monthMondays = []; // dates of Mondays of month
+    if (firstMonthDateWeekDay === 0) { // if month begins on Sunday, i.e. month, 1 = Sunday
+        monthMondays[0] = 2; // first Monday of month = 2
+    } else if (firstMonthDateWeekDay === 1) { // if month begins on Monday, i.e. month, 1 = Monday
+        monthMondays[0] = 1; // first Monday of month = 1
+    } else {
+        monthMondays[0] = 2 + 7 - firstMonthDateWeekDay; // first Monday of month starts next week
+    }
+    for (let i = monthMondays[0] + 7; i <= numberOfMonthDays; i+=7 ) {
+        monthMondays.push(i);
+    }
+    if (monthMondays[0] !== 1) {
+        numberOfMonthWeeks = monthMondays.length + 1;
+    } else {
+        numberOfMonthWeeks = monthMondays.length;
+    }
+    console.log(monthMondays, numberOfMonthWeeks);
+
+    // ======= Month with dirty dates =======
+    let monthDatesObj = {};
+    if (monthMondays[0] !== 1) {
+        for (let i = 0; i < numberOfMonthWeeks; i++) {
+            monthDatesObj[i] = [
+                monthMondays[0] - 7 + i * 7, // Monday
+                monthMondays[0] - 6 + i * 7, // Tuesday
+                monthMondays[0] - 5 + i * 7, // Wednesday
+                monthMondays[0] - 4 + i * 7, // Thurday
+                monthMondays[0] - 3 + i * 7, // Friday
+                monthMondays[0] - 2 + i * 7, // Saturday
+                monthMondays[0] - 1 + i * 7 // Sunday
+            ]
+        }
+    } else {
+        for (let i = 0; i < numberOfMonthWeeks; i++) {
+            monthDatesObj[i] = [
+                monthMondays[0] + i * 7, // Monday
+                monthMondays[0] + i * 7 + 1, // Tuesday
+                monthMondays[0] + i * 7 + 2, // Wednesday
+                monthMondays[0] + i * 7 + 3, // Thurday
+                monthMondays[0] + i * 7 + 4, // Friday
+                monthMondays[0] + i * 7 + 5, // Saturday
+                monthMondays[0] + i * 7 + 6 // Sunday
+            ]
+        }
+    }
+
+    // ======= Month dates cleared =======
+    let monthDatesCleared = [];
+    for (let key in monthDatesObj) {
+        for (let i = 0; i < monthDatesObj[key].length; i++) {
+            if (monthDatesObj[key][i] <= 0 || monthDatesObj[key][i] > numberOfMonthDays ) {
+                monthDatesObj[key][i] = "";
+            }
+            monthDatesCleared.push(monthDatesObj[key][i]);
+        }
+    }
+    console.log(monthDatesCleared);
+
+    // ======= Get weekend dates =======
+    let weekendDates = [];
+    for (let i = 0; i < monthDatesCleared.length; i++) { // Saturdays
+        if (monthDatesCleared[i * 7 + 5]) {
+            weekendDates.push(monthDatesCleared[i * 7 + 5]);
+        }
+        if (monthDatesCleared[i * 7 + 6]) {
+            weekendDates.push(monthDatesCleared[i * 7 + 6]);
+        }
+    }
+    // weekendDates = weekendDates.filter(val => val).sort((a, b) => a - b);
+    console.log(weekendDates);
+
+    // ======= First week empty values count (if any) =======
+    let firstWeekDatesArr = [], firstWeekDateVal;
+    for (let i = 0; i < 7; i++) {
+        if (monthDatesObj[0][i] === "") {
+            firstWeekDateVal = `<span class="cal-prev-month-day">${prevMonthLastMonthDay - i}</span>`;
+            firstWeekDatesArr.push(firstWeekDateVal);
+        }
+    }
+    firstWeekDatesArr = firstWeekDatesArr.reverse();
+    // ======= Filter first week empty values =======
+    monthDatesObj[0] = monthDatesObj[0].filter(val => val);
+    // ======= Concatenate previous month dates with first week dates =======
+    monthDatesObj[0] = firstWeekDatesArr.concat(monthDatesObj[0]);
+    console.log(firstWeekDatesArr);
+    console.log(monthDatesObj[0]);
+
+    // ======= Last week empty values count (if any) =======
+    let lastWeekDatesArr = [], lastWeekDateVal;
+    for (let i = 0; i < 7; i++) {
+        if (monthDatesObj[numberOfMonthWeeks - 1][i] === "") {
+            lastWeekDateVal = `<span class="cal-next-month-day">${7 - i}</span>`;
+            lastWeekDatesArr.push(lastWeekDateVal);  
+        }
+    }
+    lastWeekDatesArr = lastWeekDatesArr.reverse();
+    // ======= Filter last week empty values =======
+    monthDatesObj[numberOfMonthWeeks - 1] = monthDatesObj[numberOfMonthWeeks - 1].filter(val => val);
+    console.log(monthDatesObj[numberOfMonthWeeks - 1]);
+    // ======= Concatenate last week dates with next month dates =======
+    monthDatesObj[numberOfMonthWeeks - 1] = monthDatesObj[numberOfMonthWeeks - 1].concat(lastWeekDatesArr);
+    console.log(monthDatesObj[numberOfMonthWeeks - 1]);
+
+    // ======= Wrapper =======
+    let calWrapper = document.createElement("div");
+    calWrapper.id = "cal-wrapper";
+    calWrapper.style.cssText = "display: block; float: left; clear: both; text-align: center;";
+    document.body.append(calWrapper);
+
+    // ======= Info =======
+    let calInfoWrapper = document.createElement("div");
+    calInfoWrapper.id = "cal-info-wrapper";
+    calInfoWrapper.style.cssText = `color: #345; font-size: 16px; font-weight: 700; height: 34px; line-height: 34px;
+        margin-bottom: 5px;`;
+    calWrapper.append(calInfoWrapper);
+    let calInfo = document.createElement("div");
+    calInfo.id = "cal-info";
+    calInfo.style.cssText = "display: inline-block; cursor: pointer;";
+    calInfo.innerHTML = `${monthsNames[curMonth]} ${curYear} года`;
+    calInfoWrapper.append(calInfo);
+
+    // ======= Header =======
+    let calHead = document.createElement("div");
+    calHead.id = "cal-header";
+    calHead.style.cssText = `display: block; float: left; clear: both; height: 28px;
+        color: #345; font-size: 16px; font-weight: 700; overflow: hidden; background-color: #90ee90;
+        border-top: 1px solid #123; border-right: 1px solid #123; border-bottom: 1px solid #123;`;
+    calWrapper.append(calHead);
+    for (let i = 0; i < 7; i++) {
+        let weekDayWrapper = document.createElement("div");
+        weekDayWrapper.classList.add("cal-week-day-wrapper", "cal-box");
+        calHead.append(weekDayWrapper);
+        let weekDayName = document.createElement("span");
+        weekDayName.className = ("cal-week-day-name");
+        weekDayName.style.cssText = "display: block; width: 100%; height: 100%; line-height: 28px;";
+        weekDayName.innerHTML = `${weekDaysNames[i]}`;
+        weekDayWrapper.append(weekDayName);
+    }
+
+    // ======= Body =======
+    let calBody = document.createElement("div");
+    calBody.id = "cal-body";
+    calBody.style.cssText = "display: block; float: left; clear: both;";
+    calWrapper.append(calBody);
+
+    // ======= Create output array =======
+    // let output = [].concat.apply([], Object.values(obj));
+    let output = Object.keys(monthDatesObj).reduce(function(res, val) {
+        return res.concat(monthDatesObj[val]);
+    }, []);
+    console.log(output);
+
+    // ======= Number of weeks = number of rows =======
+    for (let i = 0; i < numberOfMonthWeeks; i++) {   
+        let calDaysRow = document.createElement("div");
+        calDaysRow.className = "cal-days-row";
+        calDaysRow.style.cssText = `border-right: 1px solid #123; border-bottom: 1px solid #123;
+            display: block; float: left; overflow: hidden; clear: both;`;
+        calBody.append(calDaysRow);
+        // ======= Append day wrapppers to rows  =======
+        for (let j = 0; j < 7; j++) {
+            let calDayWrapper = document.createElement("div");
+            calDayWrapper.classList.add("cal-day-wrapper", "cal-box");
+            calDayWrapper.style.cssText = "display: inline-block; padding: 15px;";
+            document.querySelectorAll(".cal-days-row")[i].append(calDayWrapper);
+        }
+    }
+
+    // ======= Apply month dates =======
+    for (let i = 0; i < document.querySelectorAll(".cal-day-wrapper").length; i++) {
+        document.querySelectorAll(".cal-day-wrapper")[i].innerHTML = `${output[i]}`;
+        for (let j = 0; j < document.querySelectorAll(".cal-days-row").length; j++) {
+            if (document.querySelectorAll(".cal-days-row .cal-day-wrapper:nth-child(6)")[j] === document.querySelectorAll(".cal-day-wrapper")[i]) {
+                document.querySelectorAll(".cal-day-wrapper")[i].innerHTML = `<span class="cal-weekend-day">${output[i]}</span>`;
+            }
+            if (document.querySelectorAll(".cal-days-row .cal-day-wrapper:nth-child(7)")[j] === document.querySelectorAll(".cal-day-wrapper")[i]) {
+                document.querySelectorAll(".cal-day-wrapper")[i].innerHTML = `<span class="cal-weekend-day">${output[i]}</span>`;
+            }
+        }
+        // ======= Add #cal-day-cur  =======
+        if (curYear === new Date().getFullYear() && curMonth === new Date().getMonth()
+            && new Date().getDate() === output[i]) {
+            document.querySelectorAll(".cal-day-wrapper")[i].id = "cal-day-cur";
+        } else if (document.querySelectorAll(".cal-day-wrapper")[i].hasAttribute("id")) {
+            document.querySelectorAll(".cal-day-wrapper")[i].removeAttribute("id");
+        }
+    }
+    applyStyles();
+}
+
+function applyStyles() {
+    // ======= Add style to .cal-box =======
+    for (let i = 0; i < document.getElementsByClassName("cal-box").length; i++) {
+        document.getElementsByClassName("cal-box")[i].style.cssText = `display: block; float: left;
+        border-left: 1px solid #123; border-left: 1px solid #123; width: 40px; height: 28px; line-height: 28px;
+        vertical-align: middle; text-align: center;`;
+    }
+
+    // ======= Add style to current month's weekend days =======
+    for (let i = 0; i < document.getElementsByClassName("cal-weekend-day").length; i++) {
+        document.getElementsByClassName("cal-weekend-day")[i].style.cssText = `display: block;
+        width: 100%; height: 100%; vertical-align: middle; background-color: #fe9;`;
+    }
+
+    // ======= Add style to .cal-prev-month-day =======
+    if (document.getElementsByClassName("cal-prev-month-day")) {
+        for (let i = 0; i < document.getElementsByClassName("cal-prev-month-day").length; i++) {
+            document.getElementsByClassName("cal-prev-month-day")[i].style.cssText = `display: block;
+            width: 100%; height: 100%; vertical-align: middle; color: #aaa; background-color: #ddd;`;
+            // Remove background if weekend day
+            if (document.getElementsByClassName("cal-prev-month-day")[i].parentNode.classList.contains("cal-weekend-day")) {
+                document.getElementsByClassName("cal-prev-month-day")[i].style.backgroundColor = "rgba(221, 221, 221, 0.5)";
+                //document.getElementsByClassName("cal-prev-month-day")[i].parentNode.style.opacity = "0.5";
+            }
+        }
+    }
+
+    // ======= Add style to .cal-next-month-day =======
+    if (document.getElementsByClassName("cal-next-month-day")) {
+        for (let i = 0; i < document.getElementsByClassName("cal-next-month-day").length; i++) {
+            document.getElementsByClassName("cal-next-month-day")[i].style.cssText = `display: block;
+            width: 100%; height: 100%; vertical-align: middle; color: #aaa; background-color: #ddd;`;
+            if (document.getElementsByClassName("cal-next-month-day")[i].parentNode.classList.contains("cal-weekend-day")) {
+                document.getElementsByClassName("cal-next-month-day")[i].style.backgroundColor = "rgba(221, 221, 221, 0.5)";
+            }
+        }
+    }
+
+    // ======= Add styles to #cal-day-cur =======
+    if (document.querySelector("#cal-day-cur")) {
+        document.querySelector("#cal-day-cur").style.color = "#ff0000";
+        document.querySelector("#cal-day-cur").style.fontWeight = "700";
+        document.querySelector("#cal-day-cur").style.backgroundColor = "#ffeb3b";
+    }
+}
+
+initCalendar();
+
+</script>
+
+</body>
+</html>
