@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+	<style>
+		body {
+			height: 100%;
+			min-height: 100%;
+			background-color: #ddd;
+			text-align: center;
+			margin: 0 auto;
+		}
+		.clocks__wrapper {
+			width: 33.333%;
+			float: left;
+		}
+		.clock {
+			display: block;
+			float: left;
+			text-align: left;
+			overflow: hidden;
+			margin: 20px;
+		}
+		input[type="button"] {
+			float: left;
+			margin-right: 15px;
+			margin-bottom: 10px;
+		}
+		.tz-info {
+			float: left;
+			clear: both;
+			margin-bottom: 10px;
+			width: 100%;
+			text-align: left;
+		}
+	</style>
+
+	<div id="clocks-dom-wrapper" class="clocks__wrapper">
+		<div class="clock" id="New_York">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+		<div class="clock" id="Minsk">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+	</div>
+	
+	<div id="clocks-svg-wrapper" class="clocks__wrapper">
+		<div class="clock" id="London">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+		<div class="clock" id="Tokyo">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+	</div>
+	
+	<div id="clocks-canvas-wrapper" class="clocks__wrapper">
+		<div class="clock" id="Berlin">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+		<div class="clock" id="Vladivostok">
+			<input type="button" value="Стоп" class="btn-stop">
+			<input type="button" value="Старт" class="btn-start">
+			<div class="tz-info"></div>
+		</div>
+	</div>
+
+	<script src="22_clockviewdom.js"></script>
+	<script src="22_clockviewsvg.js"></script>
+	<script src="22_clockviewcanvas.js"></script>
+	<script src="22_clock.js"></script>
+	<script src="22_clockcontrollerbuttons.js"></script>
+
+	<script>
+
+		const containerDOM = document.querySelector("#clocks-dom-wrapper");
+		const viewDOM = new ClockViewDOM(containerDOM);
+		const modelDOM = new Clock(viewDOM);
+		const controllerDOM = new ClockControllerButtons(modelDOM, containerDOM);
+		
+		const containerSVG = document.querySelector("#clocks-svg-wrapper");
+		const viewSVG = new ClockViewSVG(containerSVG);
+		const modelSVG = new Clock(viewSVG);
+		const controllerSVG = new ClockControllerButtons(modelSVG, containerSVG);
+		
+		const containerCanvas = document.querySelector("#clocks-canvas-wrapper");
+		const viewCanvas = new ClockViewCanvas(containerCanvas);
+		const modelCanvas = new Clock(viewCanvas);
+		const controllerCanvas = new ClockControllerButtons(modelCanvas, containerCanvas);		
+		
+	</script>
+
+</body>
+</html>
