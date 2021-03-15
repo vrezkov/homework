@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+
+    let arenaWrapper, arena;
+    const arenaWidth = 630;
+    const arenaHeight = 420;
+    
+    let btnStart;
+
+    let score,
+        score1 = 0,
+        score2 = 0;
+
+    let paddle1, // paddle 1 (left)
+        paddle2, // paddle 2 (right)
+        paddleWidth = 10,
+        paddleHeight = 80,
+        paddleSpeed = 8,
+        paddle1Ytop = 0,
+        paddle1Ybottom = 0,
+        paddle2Ytop = 0,
+        paddle2Ybottom = 0,
+        paddle1MoveUp = false,
+        paddle1MoveDown = false,
+        paddle2MoveUp = false,
+        paddle2MoveDown = false;
+    
+    let ball,
+        ballWidth = 18,
+        ballPosX = 0,
+        ballPosY = 0,
+        ballSpeedX = 2,
+        ballSpeedY = 2,
+        ballPosXrand = 0,
+        ballPosYrand = 0,
+        ballSpeedXrand = 0,
+        ballSpeedYrand = 0,
+        ballAccX = 0,
+        ballAccY = 0;
+
+    let countDown;
+
+    let requestAnimationId = null;
+
+    let timeOut;
+
+// ======= Body =======
+
+    document.body.style.cssText = "height: 100%; min-height: 100%; margin: 0 auto; background-color: #111;";
+
+// ======= Arena wrapper =======
+
+    arenaWrapper = document.createElement("div");
+    arenaWrapper.id = "arena-wrapper";
+    arenaWrapper.style.cssText = `position: absolute; width: ${arenaWidth + "px"}; height: ${arenaHeight + "px"};
+        top: 0; right: 0; bottom: 0; left: 0; margin: auto; background-color: #eee; border: 2px solid #fff;`;
+    document.body.append(arenaWrapper);
+
+// ======= Arena =======
+
+    arena = document.createElement("div");
+    arena.id = "arena";
+    arena.style.cssText = `position: relative; width: ${arenaWidth + "px"}; height: ${arenaHeight + "px"};`;
+    arenaWrapper.append(arena);
+
+// ======= Start button =======
+
+    btnStart = document.createElement("div");
+    btnStart.id = "btn-start";
+    btnStart.style.cssText = `position: absolute; width: 100px; height: 40px; line-height: 40px; border-radius: 4px;
+        top: ${arenaWrapper.offsetTop - 50 + "px"}; left: ${arenaWrapper.offsetLeft + "px"};
+        color: #fff; font-size: 16px; font-family: Arial; text-align: center; cursor: pointer; сolor: #fff; background-color: #ff0000;`;
+    btnStart.innerHTML = "Старт";
+    document.body.append(btnStart);
+    btnStart.addEventListener("click", gameStart);
+
+// ======= Score =======
+
+    score = document.createElement("div");
+    score.id = "score";
+    score.style.cssText = `position: absolute; width: 100px; height: 40px; line-height: 40px; 
+        top: ${arenaWrapper.offsetTop - 50 + "px"}; left: ${arenaWrapper.offsetLeft + (arenaWrapper.offsetWidth - 100) / 2 + "px"};
+        font-size: 38px; font-weight: 700; font-family: Arial; text-align: center; color: #fff;`;
+    score.innerHTML = `${score1} : ${score2}`;
+    document.body.append(score);
+
+// ======= Paddle 1 (left) =======
+
+    paddle1 = document.createElement("div");
+    paddle1.id = "paddle1";
+    paddle1.style.cssText = `width: ${paddleWidth + "px"}; height: ${paddleHeight + "px"}; position: absolute;
+        top: ${(arenaHeight - paddleHeight) / 2 + "px"}; left: 0; background-color: #2ea44f;`;
+    arena.append(paddle1);
+    paddle1Ytop = parseInt(paddle1.style.top);
+    paddle1Ybottom = paddle1Ytop + paddleHeight;
+
+// ======= Paddle 2 (right) =======
+
+    paddle2 = document.createElement("div");
+    paddle2.id = "paddle2";
+    paddle2.style.cssText = `width: ${paddleWidth + "px"}; height: ${paddleHeight + "px"}; position: absolute;
+        top: ${paddle1.style.top}; right: 0; background-color: #0366de;`;
+    arena.append(paddle2);
+    paddle2Ytop = paddle1Ytop;
+    paddle2Ybottom = paddle1Ybottom;
+
+// ======= Ball =======
+
+    ball = document.createElement("div");
+    ball.id = "ball";
+    ball.style.cssText = `width: ${ballWidth + "px"}; height: ${ballWidth + "px"}; position: absolute;
+        top: ${(arenaHeight - ballWidth) / 2 + "px"}; left: ${(arenaWidth - ballWidth) / 2 + "px"}; 
+        background-color: #ff0000; border-radius: 50%;`;
+    arena.append(ball);
+
+// ======= Countdown div =======
+
+    countDown = document.createElement("div");
+    countDown.id = "count-down";
+    countDown.style.cssText = `position: absolute;
+        width: ${arenaWidth / 4 + "px"}; height: ${arenaHeight / 4 + "px"};
+        top: ${(arenaHeight - arenaHeight / 4) / 2 + "px"}; right: 0; left: 0; margin: auto; 
+        line-height: ${arenaHeight / 4 + "px"}; font-size: 60px; font-weight: 700; font-family: Arial;
+        text-align: center; color: #111; display: none;`;
+    arena.append(countDown);
+
+// ======= Move paddles =======
+
+    document.addEventListener("keydown", onKeyDownFunc);
+    document.addEventListener("keyup", onKeyUpFunc);
+
+    function onKeyDownFunc(e) {
+        if (e.code == "ShiftLeft") {paddle1MoveUp = true;}
+        if (e.code == "ControlLeft") {paddle1MoveDown = true;}
+        if (e.key == "ArrowUp") {paddle2MoveUp = true;}
+        if (e.key == "ArrowDown") {paddle2MoveDown = true;}
+    }
+
+    function onKeyUpFunc(e) {
+        if (e.code == "ShiftLeft") {paddle1MoveUp = false;}
+        if (e.code == "ControlLeft") {paddle1MoveDown = false;}
+        if (e.key == "ArrowUp") {paddle2MoveUp = false;}
+        if (e.key == "ArrowDown") {paddle2MoveDown = false;}
+    }
+
+    function movePaddles(){
+        if (paddle1MoveUp) {
+            paddle1Ytop -= paddleSpeed;
+            if (paddle1Ytop <= 0) {paddle1Ytop = 0;}
+        }
+        if (paddle1MoveDown) {
+            paddle1Ytop += paddleSpeed;
+            if (paddle1Ytop >= arenaHeight - paddleHeight) {paddle1Ytop = arenaHeight - paddleHeight;}
+        }
+        paddle1Ybottom = paddle1Ytop + paddleHeight;
+        paddle1.style.top = paddle1Ytop + "px";
+        if (paddle2MoveUp) {
+            paddle2Ytop -= paddleSpeed;
+            if (paddle2Ytop <= 0) {paddle2Ytop = 0;}
+        }
+        if (paddle2MoveDown) {
+            paddle2Ytop += paddleSpeed;
+            if (paddle2Ytop >= arenaHeight - paddleHeight) {paddle2Ytop = arenaHeight - paddleHeight;}
+        }
+        paddle2Ybottom = paddle2Ytop + paddleHeight;
+        paddle2.style.top = paddle2Ytop + "px";
+    }
+
+// ======= Game start =======
+
+    function gameStart() {
+        if (score1 < 5 || score2 < 5) {
+            btnStart.style.backgroundColor = "#fda182";
+            btnStart.removeEventListener("click", gameStart);
+        }
+        if (score1 >= 5 || score2 >= 5) {
+            score1 = 0;
+            score2 = 0;
+            score.innerHTML = `${score1} : ${score2}`;
+        }
+        // paddle1.style.top = `${(arenaHeight - paddleHeight) / 2 + "px"}`;
+        // paddle1Ytop = parseInt(paddle1.style.top);
+        // paddle2.style.top = paddle1.style.top;
+        // paddle2Ytop = paddle1Ytop;
+        ballStart();
+        startAnimation();
+    }
+
+    function startAnimation() {
+        if (!requestAnimationId) {
+            requestAnimationId = requestAnimationFrame(gameLoop);
+        }
+    }
+
+    function stopAnimation() {
+        if (requestAnimationId) {
+            cancelAnimationFrame(requestAnimationId);
+            requestAnimationId = null;
+        }
+    }
+
+// ======= Ball start =======
+
+    function ballStart() {
+        ball.style.left = (arenaWidth - ballWidth) / 2 + "px";
+        ball.style.top = (arenaHeight - ballWidth) / 2 + "px";
+        ballPosX = parseInt(ball.style.left);
+        ballPosY = parseInt(ball.style.top);
+        ballPosXrand = Math.floor(Math.random() * (ballWidth + 1)) - ballWidth / 2;
+        ballPosYrand = Math.floor(Math.random() * (ballWidth + 1)) - ballWidth / 2;
+        ballSpeedXrand = (Math.round(Math.random()) * 2 - 1) * ballSpeedX;
+        ballSpeedYrand = (Math.round(Math.random()) * 2 - 1) * ballSpeedY;
+        ballPosX = ballPosX + ballPosXrand + ballSpeedXrand;
+        ballPosY = ballPosY + ballPosYrand + ballSpeedYrand;
+        ballSpeedX = ballSpeedXrand;
+        ballSpeedY = ballSpeedYrand;
+        ballAccX = 1.25;
+        ballAccY = 1.05;
+    }   
+
+// ======= Game loop =======
+
+    function gameLoop(){
+
+        requestAnimationId = null;
+        startAnimation();
+
+        ballPosX += ballSpeedX;
+        ballPosY += ballSpeedY;
+
+        // Y collisions
+        if (ballPosY <= Math.abs(ballSpeedY) || ballPosY >= arenaHeight - ballWidth - Math.abs(ballSpeedY)) {
+            ballSpeedY = -ballSpeedY * ballAccY;
+        }
+        // X collision - left 
+        if (ballPosX <= paddleWidth + Math.abs(ballSpeedX) && ballPosY + ballWidth >= paddle1Ytop && ballPosY <= paddle1Ybottom){
+            ballPosX = paddleWidth + Math.abs(ballSpeedX);
+            ballSpeedX = -ballSpeedX * ballAccX;
+        }
+        // X collision - right
+        if (ballPosX >= arenaWidth - paddleWidth - ballWidth - Math.abs(ballSpeedX) && ballPosY + ballWidth >= paddle2Ytop && ballPosY <= paddle2Ybottom) {
+            ballPosX = arenaWidth - paddleWidth - ballWidth - Math.abs(ballSpeedX);
+            ballSpeedX = -ballSpeedX * ballAccX;
+        }
+        // X collisions - paddle1 (left) or paddle2 (right) loses
+        if (ballPosX < paddleWidth / 2 || ballPosX > arenaWidth - ballWidth - paddleWidth / 2) {
+            stopAnimation();
+            if (ballPosX < paddleWidth / 2) { // paddle1 (left) loses
+                ball.style.left = "0px";
+                score2++;
+            }
+            if (ballPosX > arenaWidth - ballWidth - paddleWidth / 2) { // paddle2 (right) loses
+                ball.style.left = arenaWidth - ballWidth + "px";
+                score1++;
+            }
+            ballSpeedX = 2;
+            ballSpeedY = 2;
+            score.innerHTML = `${score1} : ${score2}`;
+            timeOut = setTimeout(setTimeOutFunc, 10);
+        }
+
+        ball.style.top = ballPosY + "px";
+        ball.style.left = ballPosX + "px";
+
+        movePaddles();
+        
+        if (score1 >= 5 || score2 >= 5) {
+            gameOver();
+        }
+
+    }
+
+// ======= Game over =======
+
+    function gameOver(){
+        stopAnimation();
+        clearTimeout(timeOut);
+        btnStart.style.backgroundColor = "#ff0000";
+        btnStart.addEventListener("click", gameStart);
+    }
+
+// ======= Settimeout function =======
+
+    function setTimeOutFunc(){
+
+        setTimeout(function(){
+            gameStart();
+        }, 4000);
+
+        setTimeout(function(){
+            countDown.innerHTML = "";
+            countDown.style.display = "none";
+        }, 3500);
+
+        setTimeout(function(){
+            for (let i = 1; i < 4; i++) {
+                setTimeout (function(){
+                    countDown.innerHTML = `${4 - i}`;
+                }, 1000 * i);
+            }
+        }, 10);
+
+        countDown.style.display = "block";
+
+    }
+
+// ======= Window resize function =======
+
+    // window.addEventListener("resize", resizeElems);
+
+    // function resizeElems(){
+    //     btnStart.style.top = arenaWrapper.offsetTop - 50 + "px";
+    //     btnStart.style.left = arenaWrapper.offsetLeft + "px";
+    //     score.style.top = arenaWrapper.offsetTop - 50 + "px";
+    //     score.style.left = arenaWrapper.offsetLeft + (arenaWrapper.offsetWidth - 100) / 2 + "px";
+    // }
+
+</script>
+
+</body>
+</html>
