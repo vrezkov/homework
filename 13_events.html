@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<style>
+a, .myinput, .myinput2 {
+    display: block;
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+</style>
+
+    <a title="Главная страница Википедии" href="https://ru.wikipedia.org/wiki/">Википедия</a>
+    <a title="Главная страница Google" href="https://google.by/">Goolge</a>
+    <a title="Главная страница YouTube" href="https://www.youtube.com/">YouTube</a>
+
+    <hr>
+
+    <input class="myinput" type="text" value="Первая строка">
+    <input class="myinput" type="text" value="Вторая строка">
+    <input class="myinput" type="text" value="Третья строка">
+
+    <hr>
+
+    <p>Lorem ipsum 12 dolor sit amet, 43 consectetur adipiscing elit, 63 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Ut enim ad minim veniam, quis 12 nostrud exercitation ullamco 87 laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <p>Duis aute irure dolor in 187 reprehenderit in voluptate velit 23 esse cillum dolore eu 15 fugiat nulla pariatur.</p>
+   
+    <hr>
+
+    <input class="myinput2" type="text" value="" data-length="3" placeholder="до 3 символов">
+    <input class="myinput2" type="text" value="" data-length="6" placeholder="до 6 символов">
+    <input class="myinput2" type="text" value="" data-length="10" placeholder="до 10 символов">
+
+    <script>
+        let anchorsAll = document.querySelectorAll("a");
+        for (let i = 0; i < anchorsAll.length; i++) {
+            anchorsAll[i].addEventListener("mouseover", changeLinks);
+            function changeLinks() {
+                let href = this.href;
+                let title = this.title;
+                this.innerHTML = title+" ("+href+")";
+                this.removeEventListener("mouseover", changeLinks);
+            }
+        }
+
+        let inputsAll = document.getElementsByClassName("myinput");
+        for (let i = 0; i < inputsAll.length; i++) {
+            inputsAll[i].addEventListener("click", showValue);
+            function showValue() {           
+                console.log(this.value);
+                this.removeEventListener("click", showValue);
+            }
+        }
+
+        let parasAll = document.querySelectorAll("p");
+        for (let i = 0; i < parasAll.length; i++) {
+            parasAll[i].addEventListener("click", returnSquareNums);
+            function returnSquareNums() {
+                let myArr = this.innerText.split(" ");
+                let myArrWithNums = [];
+                let returnNumber = "";
+                for (let j = 0; j < myArr.length; j++) {
+                    if (!isNaN(myArr[j])) {
+                        let pNumber = myArr[j];
+                        pNumber = Math.pow(+pNumber, 2);
+                        myArr.splice(myArr.indexOf(myArr[j]), 1, pNumber)
+                    }    
+                }
+                this.innerText = myArr.join(" ");
+                this.removeEventListener("click", returnSquareNums);
+            }
+        }
+
+        let inputs2All = document.getElementsByClassName("myinput2");
+        for (let i = 0; i < inputs2All.length; i++) {
+            inputs2All[i].addEventListener("blur", checkValue);
+            function checkValue() {
+                if (this.value.length != this.dataset.length) {
+                    this.style.cssText = "border: 2px solid #ff0000;";
+                } else {
+                    this.style.cssText = "border: 2px solid #008000;";
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
