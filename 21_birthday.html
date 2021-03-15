@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+
+// ======= Body =======
+
+document.body.style.cssText = "height: 100%; min-height: 100%; margin: 0 auto; font-family: Arial;";
+
+// ======= Check user =======
+
+function checkUser() {
+    if (localStorage.getItem("userVisited")
+        && JSON.parse(localStorage.getItem("userVisited")).userName 
+        && JSON.parse(localStorage.getItem("userVisited")).userBirthday) 
+    {
+        welcomeUser();
+    } else {
+        showPopup();
+    }
+}
+
+// ======= Welcome user =======
+
+function welcomeUser() {
+    // console.log(JSON.parse(localStorage.getItem("userVisited")).userBirthday);
+    let welcome = document.createElement("div");
+    welcome.id = "welcome";
+    welcome.style.cssText = `position: absolute; top: -50%; left: 50%; transform: translate(-50%, -50%); text-align: center;
+        transition: top 1s ease-in-out 1s, opacity 1s ease-out 1s;`;
+    document.body.append(welcome);
+    
+    let welcomeText = document.createElement("span");
+    welcomeText.id = "welcome-text";
+    welcomeText.style.cssText = `font-size: 40px; font-weight: 700; color: #555;`;
+    welcomeText.innerHTML = `Привет, ${JSON.parse(localStorage.getItem("userVisited")).userName}!`;
+    welcome.append(welcomeText);
+
+    setTimeout(function() {
+        setTimeout(function() {
+            welcome.remove();
+            showCountdown();
+        }, 2500);
+        setTimeout(function() {
+            welcome.style.opacity = "0";
+        }, 2000);
+        welcome.style.top = "15%";
+    }, 100);
+}
+
+// ======= Show countdown =======
+
+function showCountdown() {
+
+    let countDown = document.createElement("div");
+    countDown.id = "count-down";
+    countDown.style.cssText = `position: absolute; width: 600px; height: auto; top: -50%; left: -50%; transform: translate(-50%, -50%);
+        background-color: #eee; border-radius: 4px; padding: 20px;
+        text-align: center; font-size: 40px; font-weight: 700; transition: top 1s ease-in-out 1s, left 1s ease-in-out 1s;`;
+    document.body.append(countDown);
+
+    setTimeout(function() {
+        countDown.style.top = "50%";
+        countDown.style.left = "50%";
+    }, 100);
+
+    runCountdown();
+
+}
+
+// ======= Run countdown =======
+
+function runCountdown() {
+
+    let userBirthday = JSON.parse(localStorage.getItem("userVisited")).userBirthday;
+
+    let parsedBirthday = new Date(userBirthday);
+    let parsedYear = parsedBirthday.getFullYear();
+    let parsedMonth = parsedBirthday.getMonth();
+    let parsedDate = parsedBirthday.getDate();
+
+    let today = new Date();
+    let curYear = today.getFullYear();
+    let nextYear = today.getFullYear() + 1;
+    let curMonth = today.getMonth();
+    let curDate = today.getDate();
+
+    let leftSeconds = 0, leftMinutes = 0, leftHours = 0, leftDays = 0, leftMonths = 0;
+
+    if (curDate <= parsedDate && curMonth <= parsedMonth) {
+        nextYear = curYear;
+    }
+
+    let nextBirthday = new Date(nextYear, parsedMonth, parsedDate);
+    let msDiff = nextBirthday.getTime() - today.getTime(); // difference in milliseconds
+
+    let oneSecond = 1000;
+    let oneMinute = 1000 * 60;
+    let oneHour = 1000 * 60 * 60;
+    let oneDay = 1000 * 60 * 60 * 24;
+
+    leftSeconds = Math.floor(msDiff / oneSecond);
+    leftMinutes = Math.floor(msDiff / oneMinute);
+    leftHours = Math.floor(msDiff / oneHour);
+    leftDays = Math.floor(msDiff / oneDay);
+    leftMonths = (nextYear - curYear) * 12 + (parsedMonth - curMonth) - 1;
+    if (leftMonths < 0) {leftMonths = 0;}
+
+    document.querySelector("#count-down").innerHTML = `
+        До дня рождения осталось<br>
+        месяцев: ${leftMonths}<br>
+        дней: ${leftDays}<br>
+        часов: ${leftHours}<br>
+        минут: ${leftMinutes}<br>
+        секунд: ${leftSeconds}
+    `;
+
+    requestAnimationFrame(runCountdown);
+
+}
+
+// ======= Show popup =======
+
+function showPopup() {
+
+    // ======= Wrapper =======
+
+    let wrapper = document.createElement("div");
+    wrapper.id = "wrapper";
+    wrapper.style.cssText = `position: fixed; z-index: 99999; top: 0; left: 0; width: 100%; height: 100%;
+        transition: background-color 1.5s ease-in-out 1s;`;
+    document.body.append(wrapper);
+
+    // ======= Form wrapper =======
+
+    let wrapperForm = document.createElement("div");
+    wrapperForm.id = "wrapper-form";
+    wrapperForm.style.cssText = `position: absolute; top: -200%; right: 0; bottom: 0; left: 0; margin: auto; padding: 15px; overflow: hidden;
+        width: 300px; height: 0; border-radius: 4px; background-color: #eee; box-shadow: 0 0 15px 10px #555;
+        transition: top 1s ease-in-out 1s;`;
+    wrapper.append(wrapperForm);
+
+    // ======= Form =======
+
+    let form = document.createElement("form");
+    form.id = "form-user-birthday";
+    form.style.cssText = `position: relative; width: 100%; height: auto; padding: 20px; box-sizing: border-box; overflow: hidden;
+		background-color: #fff; font-size: 14px;`;
+    wrapperForm.append(form);
+
+    // ======= Name =======
+
+    let inputName = document.createElement("input");
+    inputName.id = "input-name";
+    inputName.type = "text";
+    inputName.name = "user-name";
+    inputName.value = "";
+    inputName.classList.add("blank");
+    inputName.style.cssText = `width: 100%; box-sizing: border-box; height: 40px; margin-bottom: 15px;
+        border: 1px solid #111; border-radius: 4px; padding: 0 10px; outline: 0 none;`;
+    form.append(inputName);
+
+    let inputNameLabel = document.createElement("label");
+    inputNameLabel.innerHTML = "Введите имя";
+    inputNameLabel.setAttribute("for", "input-name");
+    inputNameLabel.style.cssText = "font-size: 12px; display: block; margin-bottom: 4px;";
+	inputName.before(inputNameLabel);
+
+    inputName.addEventListener("change", checkName);
+   // inputName.addEventListener("change", validate);
+
+    // ======= Birthday =======
+
+    let inputBirthday = document.createElement("input");
+    inputBirthday.id = "input-birthday";
+    inputBirthday.type = "date";
+    inputBirthday.name = "user-birthday";
+    inputBirthday.value = "";
+    inputBirthday.classList.add("blank");
+    inputBirthday.style.cssText = `width: 100%; box-sizing: border-box; height: 40px; margin-bottom: 15px;
+		border: 1px solid #111; border-radius: 4px; padding: 0 10px; outline: 0 none; font-family: Arial;`;
+    form.append(inputBirthday);
+
+		// ======= Min and max dates =======
+
+		let today = new Date();
+		let day = today.getDate();
+		let month = today.getMonth();
+		let year = today.getFullYear();
+
+		if (day < 10) {day = "0" + day};
+		if (month < 10) {month = "0" + month};
+
+		let mindate, minyear, maxdate, maxyear;
+
+		minyear = year - 100;
+		mindate = minyear +"-"+ month +"-"+ day;
+
+		maxyear = year - 18;
+		maxdate = maxyear +"-"+ month +"-"+ day;
+
+		inputBirthday.setAttribute("min", mindate);
+		inputBirthday.setAttribute("max", maxdate);
+
+    let inputBirthdayLabel = document.createElement("label");
+    inputBirthdayLabel.innerHTML = "Укажите дату рождения";
+    inputBirthdayLabel.setAttribute("for", "input-birthday");
+    inputBirthdayLabel.style.cssText = "font-size: 12px; display: block; margin-bottom: 4px;";
+    inputBirthday.before(inputBirthdayLabel);
+
+    inputBirthday.addEventListener("change", checkBirthday);
+  //  inputName.addEventListener("change", validate);
+
+    // ======= Submit =======
+
+    let inputSubmit = document.createElement("input");
+    inputSubmit.setAttribute("type", "submit");
+    inputSubmit.style.cssText = `width: 100%; box-sizing: border-box; height: 40px;
+        background-color: #ff0000; color: #fff; cursor: pointer; border: 1px solid #ff0000; border-radius: 4px; outline: 0 none;`;
+    inputSubmit.value = "Отправить";
+    form.append(inputSubmit);
+
+    form.addEventListener("change", addValidInvalidStyles);
+    form.addEventListener("submit", submitForm);
+
+    // ======= Wrapper get height =======
+
+    wrapperForm.style.height = form.offsetHeight + "px";
+
+    // ======= Check name =======
+
+    function checkName() {
+        if (this.value && this.value.trim() != "" && this.value.length > 1 && this.value.length < 25 && !/\d/.test(this.value)) {
+			if (this.classList.contains("blank")) {this.classList.remove("blank")};
+            if (this.classList.contains("invalid")) {this.classList.remove("invalid")};
+            this.classList.add("valid");
+            this.value = this.value.trim();
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            return this.value;
+        } else {
+			if (this.classList.contains("blank")) {this.classList.remove("blank")};
+            if (this.classList.contains("valid")) {this.classList.remove("valid")};
+            this.classList.add("invalid");
+        }
+    }
+
+    // ======= Check birthday =======
+
+	function checkBirthday() {
+		if (this.value < this.min || this.value > this.max) {
+			if (this.classList.contains("blank")) {this.classList.remove("blank")};
+			if (this.classList.contains("valid")) {this.classList.remove("valid")};
+			this.classList.add("invalid");
+		} else {
+			if (this.classList.contains("blank")) {this.classList.remove("blank")};
+			if (this.classList.contains("invalid")) {this.classList.remove("invalid")};
+			this.classList.add("valid");
+        }
+	}
+
+    // ======= Submit data =======
+
+	function submitForm(e) {
+		e.preventDefault();
+		if (inputName.classList.contains("valid") && inputBirthday.classList.contains("valid")) {
+            let userName = inputName.value;
+            let userBirthday = inputBirthday.value;
+            localStorage.setItem("userVisited", JSON.stringify({userName, userBirthday}));
+            form.reset();
+			// wrapper.style.display = "none";
+			wrapper.remove();
+		} else {
+            for (let i = 0; i < document.querySelectorAll("input").length; i++) {
+                if (document.querySelectorAll("input")[i].classList.contains("blank")) {
+                    document.querySelectorAll("input")[i].classList.remove("blank");
+                    document.querySelectorAll("input")[i].classList.add("invalid");
+                }
+            }
+            addValidInvalidStyles();
+			return;
+		}
+    }
+
+    // =======  Add styles to .valid, .invalid =======
+
+    function addValidInvalidStyles() {
+        for (let i = 0; i < document.querySelectorAll("input").length; i++) {
+            if (document.querySelectorAll("input")[i].classList.contains("valid")) {
+                document.querySelectorAll("input")[i].style.backgroundColor = "#d0f0c0";
+            }
+            if (document.querySelectorAll("input")[i].classList.contains("invalid")) {
+                document.querySelectorAll("input")[i].style.backgroundColor = "#ffcccb";
+            }
+        }
+    }
+
+    // ======= Animate =======
+
+    setTimeout(function() {
+        wrapperForm.style.height = form.offsetHeight + "px";
+        wrapperForm.style.top = "0";
+        wrapper.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+    }, 100);
+
+}
+
+// ======= Start on window load =======
+
+window.addEventListener("load", function() {
+	checkUser();
+});
+
+</script>
+
+</body>
+</html>
