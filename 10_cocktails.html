@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="HashStorage.js"></script>
+</head>
+<body>
+    
+<script>
+
+// ================== BUTTONS CONTAINER ==================
+let bCont = document.createElement("div");
+bCont.style.cssText = "text-align: center; position: absolute; bottom: 25%; left: 0; right: 0;";
+document.body.append(bCont);
+
+let btn1 = document.createElement("button");
+btn1.id = "btn-add-cocktail";
+btn1.innerHTML = "Ввод рецепта";
+bCont.append(btn1);
+
+let btn2 = document.createElement("button");
+btn2.id = "btn-get-cocktail";
+btn2.innerHTML = "Рецепт напитка";
+bCont.append(btn2);
+
+let btn3 = document.createElement("button");
+btn3.id = "btn-remove-cocktail";
+btn3.innerHTML = "Удаление напитка";
+bCont.append(btn3);
+
+let btn4 = document.createElement("button");
+btn4.id = "btn-get-all-cocktails";
+btn4.innerHTML = "Перечень всех коктейлей";
+bCont.append(btn4);
+
+for (let i = 0; i < document.querySelectorAll("button").length; i++) {
+    document.querySelectorAll("button")[i].style.cssText = `background-color: #345; border-radius: 10px; border: 2px double #111;
+    color: #fff; text-align: center; font-size: 18px; margin: 5px; padding: 14px; cursor: pointer; outline: 0 none;`;
+}
+
+// ================== NEW CLASS ==================
+
+let cocktailsStorage = new HashStorage();
+
+// ================== ADD COCKTAIL ==================
+let addCocktailBtn = document.getElementById("btn-add-cocktail");
+addCocktailBtn.onclick = addCocktail;
+function addCocktail() {
+
+    if (document.getElementById("all-cocktails")) {document.getElementById("all-cocktails").remove();}
+
+    let cocktail = {}, cocktailName = "", isAlcohol, numberOfIngredients, isDigit = /\d/, cocktailIngredient = "", cocktailIngredients = [], cocktailRecipe = "";
+    // ================== Name ==================
+    cocktailName = window.prompt("Введите название коктейля");
+    if (cocktailName === null) {
+        return;
+    }
+    if (cocktailName === "" || cocktailName.trim() === "") {
+        alert("Введите название коктейля!");
+        return addCocktail();
+    }
+    if (cocktailName && cocktailName.length >= 1) {
+        cocktailName = cocktailName;
+    }
+    if (isDigit.test(cocktailName.charAt(0)) == false) {
+        cocktailName = cocktailName.charAt(0).toUpperCase() + cocktailName.slice(1);
+    }
+    // ================== If alcohol ==================
+    isAlcohol = confirm("Коктейль алкогольный?");
+    if (isAlcohol == true) {
+        isAlcohol = "алкогольный";
+    } else {
+        isAlcohol = "безалкогольный";
+    }
+    // ================== Number of ingredients ==================
+    do {
+        numberOfIngredients = window.prompt("Сколько необходимо ингредиентов?\n(Введите число от 3 и более)");
+    } while (
+        !numberOfIngredients || isDigit.test(numberOfIngredients) == false || numberOfIngredients <= 2 || numberOfIngredients > 15
+    );
+    // ================== Ingredients ==================
+    for (let i = 0; i < numberOfIngredients; i++) {   
+        do {
+            cocktailIngredient = (window.prompt(`Введите ингредиент коктейля №${(i+1)}`));
+        } while (
+            cocktailIngredient === null || cocktailIngredient == "" || cocktailIngredient.length < 3 || cocktailIngredient.length >= 100
+        );
+        cocktailIngredients.push((cocktailIngredient)); 
+    }  
+    // ================== Recipe ==================
+    do {
+        cocktailRecipe = window.prompt("Введите рецепт коктейля");
+    } while (
+        !cocktailRecipe || cocktailRecipe.length <= 10
+    );
+    // ================== Add values ==================
+    cocktailsStorage.addValue(cocktailName, {isAlcohol, cocktailIngredients, cocktailRecipe});
+    getAllCocktails.call(this);
+    //localStorage.setItem(cocktailName, JSON.stringify({isAlcohol, cocktailIngredients, cocktailRecipe}));
+    //console.log("Коктейль "+cocktailsStorage.getKeys()[0]+" добавлен");
+}
+
+
+// ================== GET COCKTAIL ==================
+let getCocktailBtn = document.getElementById("btn-get-cocktail");
+getCocktailBtn.onclick = getCocktail;
+function getCocktail() {
+
+    if (document.getElementById("all-cocktails")) {document.getElementById("all-cocktails").remove();}
+
+    let cocktailName = "", isDigit = /\d/;
+    cocktailName = window.prompt("Введите название коктейля");
+    if (cocktailName === null) {
+        return;
+    }
+    if (cocktailName === "" || cocktailName.trim() === "") {
+        alert("Введите название коктейля!");
+        return addCocktail();
+    }
+    if (cocktailName && cocktailName.length >= 1) {
+        cocktailName = cocktailName;
+    }
+    if (isDigit.test(cocktailName.charAt(0)) == false) {
+        cocktailName = cocktailName.charAt(0).toUpperCase() + cocktailName.slice(1);
+    }
+    // ===
+    // for (let key in localStorage) {
+    // if (localStorage.hasOwnProperty(cocktailName)) {
+    // ===
+    // if (localStorage.getItem(cocktailName)) {
+    //     let getAlc = JSON.parse(localStorage.getItem(cocktailName)).isAlcohol;
+    //     let getIngredients = JSON.parse(localStorage.getItem(cocktailName)).cocktailIngredients;
+    //     let getRecipe = JSON.parse(localStorage.getItem(cocktailName)).cocktailRecipe;
+    //     if (document.getElementById("cocktail-recipe")) {document.getElementById("cocktail-recipe").remove();}
+    //     let div = document.createElement("div");
+    //     div.id = "cocktail-recipe";
+    //     document.body.prepend(div);
+    //     let list = document.createElement("ul");
+    //     for (let i = 0; i < getIngredients.length; i++) {
+    //         let li = document.createElement("li");
+    //         li.append(document.createTextNode(getIngredients[i]));
+    //         list.append(li);
+    //     }
+    //     div.innerHTML = `<h2>${cocktailName} (${getAlc})</h2><p>${getRecipe}</p>`;
+    //     document.querySelector("h2").after(list);
+    // } else if (cocktailName && !localStorage.getItem(cocktailName)) {
+    //     alert(`Напитка «${cocktailName}» не существует!`);
+    // }
+    // ===
+    if (cocktailsStorage.getValue(cocktailName)) {
+
+        let getAlc = cocktailsStorage.getValue(cocktailName).isAlcohol;
+        let getIngredients = cocktailsStorage.getValue(cocktailName).cocktailIngredients;
+        let getRecipe = cocktailsStorage.getValue(cocktailName).cocktailRecipe;
+        if (document.getElementById("cocktail-recipe")) {document.getElementById("cocktail-recipe").remove();}
+        let div = document.createElement("div");
+        div.id = "cocktail-recipe";
+        document.body.prepend(div);
+        let list = document.createElement("ul");
+        for (let i = 0; i < getIngredients.length; i++) {
+            let li = document.createElement("li");
+            li.append(document.createTextNode(getIngredients[i]));
+            list.append(li);
+        }
+        div.innerHTML = `<h2>${cocktailName} (${getAlc})</h2><p>${getRecipe}</p>`;
+        document.querySelector("h2").after(list);
+    } else if (cocktailName && !cocktailsStorage.getValue(cocktailName)) {
+        alert(`Напитка «${cocktailName}» не существует!`);
+    }
+}
+
+
+// ================== DELETE COCKTAIL ==================
+let removeCocktailBtn = document.getElementById("btn-remove-cocktail");
+removeCocktailBtn.onclick = deleteCocktail;
+
+function deleteCocktail() {
+    if (cocktailsStorage.getKeys() == false) {
+        alert(`Напитков нет!`);
+    } else {
+        let cocktailName = "", isDigit = /\d/;
+        cocktailName = window.prompt("Введите название коктейля");
+        if (cocktailName === null) {
+            return;
+        }
+        if (cocktailName === "" || cocktailName.trim() === "") {
+            alert("Введите название коктейля!");
+            return addCocktail();
+        }
+        if (cocktailName && cocktailName.length >= 1) {
+            cocktailName = cocktailName;
+        }
+        if (isDigit.test(cocktailName.charAt(0)) == false) {
+            cocktailName = cocktailName.charAt(0).toUpperCase() + cocktailName.slice(1);
+        }
+        if (cocktailsStorage.getValue(cocktailName)) {
+            cocktailsStorage.deleteValue(cocktailName);
+            getAllCocktails.call(this);
+            alert(`Напиток «${cocktailName}» удален!`);
+        } else if (cocktailName && !cocktailsStorage.getValue(cocktailName)) {
+            alert(`Напитка «${cocktailName}» не существует!`);
+        }
+    }
+
+    // if (localStorage.getItem(cocktailName)) {
+    //     localStorage.removeItem(cocktailName);
+    //     getAllCocktails.call(this);
+    //     alert(`Напиток «${cocktailName}» удален!`);
+    // } else if (cocktailName && !localStorage.getItem(cocktailName)) {
+    //     alert(`Напитка «${cocktailName}» не существует!`);
+    // }
+}
+
+
+// ================== GET ALL COCKTAILS ==================
+let getAllCocktailsBtn = document.getElementById("btn-get-all-cocktails");
+getAllCocktailsBtn.onclick = getAllCocktails;
+function getAllCocktails() {
+    if (document.getElementById("all-cocktails")) {document.getElementById("all-cocktails").remove();}
+    if (cocktailsStorage.getKeys()) {
+        let div = document.createElement("div");
+        div.id = "all-cocktails";
+        document.body.prepend(div);
+        div.innerHTML = `Список коктейлей: ${cocktailsStorage.getKeys().sort().map(key => `<strong>${key}</strong>`).join(", ")}`;
+        //div.innerHTML = `Список коктейлей: ${Object.keys(localStorage).sort().map(key => `<strong>${key}</strong>`).join(", ")}`;
+    }
+    if (cocktailsStorage.getKeys() == false) {
+        document.querySelector("#all-cocktails").innerHTML = "Напитков нет!";
+    }
+}
+
+
+cocktailsStorage.addValue(
+    "Маргарита", {
+        "isAlcohol": "алкогольный",
+        "cocktailIngredients": ["Водка Finlandia 50мл","Персиковый ликер BOLS 25мл","Клюквенный сок 40мл","Ананасовый сок 40мл","Ананас 15г","Малина 5г"],
+        "cocktailRecipe": "Наполни слинг кубиками льда доверху. Налей в шейкер клюквенный сок 40 мл, ананасовый сок 40 мл, персиковый ликер 25 мл и водку 50 мл. Наполни шейкер кубиками льда и взбей. Перелей через стрейнер в слинг. Укрась кусочком ананаса и ягодой малины на коктейльной шпажке."
+    }
+);
+
+cocktailsStorage.addValue(
+    "Пеликан", {
+        "isAlcohol": "безалкогольный",
+        "cocktailIngredients": ["Гренадин Monin 10мл","Клубничный сироп Monin 10мл","Персиковый сок 150мл","Лимонный сок 15мл","Банан 110г","Клубника 50г","Дробленый лед 60г"],"cocktailRecipe":"Положи в блендер очищенную и нарезанную половинку банана и клубнику 2 ягоды. Налей лимонный сок 15 мл, гренадин 10 мл, клубничный сироп 10 мл и персиковый сок 150 мл. Добавь в блендер совок дробленого льда и взбей. Перелей в хайбол. Укрась кружком банана и половинкой клубники на коктейльной шпажке."
+    }
+);
+
+cocktailsStorage.addValue(
+    "Дайкири", {
+        "isAlcohol":"безалкогольный",
+        "cocktailIngredients": ["белый ром 60мл","сока лайма 30мл","1 чайная ложка сахарного сиропа","дроблёныый лед 200г"],
+        "cocktailRecipe": "Влейте ром, сок лайма и сахарный сироп в шейкер для коктейлей. Добавьте лёд, накройте крышкой и встряхните до охлаждения. Процедите в охлаждённый бокал."
+    }
+);
+
+cocktailsStorage.addValue(
+    "Тропический", {
+        "isAlcohol": "безалкогольный",
+        "cocktailIngredients": ["Молоко 400мл","Бананы 3-4 шт.","Апельсиновый сок 400мл","Сахар 1 ст. л. (по вкусу)","Лед (по вкусу)"],
+        "cocktailRecipe": "Всё взбить блендером или миксером. После того, как взбили, добавить кусочки льда и продолжить дальше взбивать до тех пор, пока лёд не станет крошкой."
+    }
+);
+
+cocktailsStorage.addValue(
+    "Секс на пляже", {
+        "isAlcohol": "алкогольный",
+        "cocktailIngredients": ["Водка Finlandia 50мл","Персиковый ликер BOLS 25мл","Клюквенный сок 40мл","Ананасовый сок 40мл","Ананас 15г","Малина 5г"],
+        "cocktailRecipe": "Наполни слинг кубиками льда доверху. Налей в шейкер клюквенный сок 40 мл, ананасовый сок 40 мл, персиковый ликер 25 мл и водку 50 мл. Наполни шейкер кубиками льда и взбей. Перелей через стрейнер в слинг. Укрась кусочком ананаса и ягодой малины на коктейльной шпажке."
+    }
+);
+
+</script>
+
+</body>
+</html>
