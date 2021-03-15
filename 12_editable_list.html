@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<style>
+#btn-remove:disabled {
+    color: #ccc !important;
+    border-color: #ccc !important;
+}
+</style>
+
+    <script>
+
+        function createList() {
+            let myArr = ["Первый пункт", "Второй пункт", "Третий пункт", "Четвертый пункт", "Пятый пункт"];
+            let myList = document.createElement("ol");
+            myList.id = "mylist";
+            for (let i = 0; i < myArr.length; i++) {
+                let li = document.createElement("li");
+                li.innerHTML = myArr[i];
+                myList.appendChild(li);
+            }
+            document.body.prepend(myList);
+        }
+        createList();
+
+        let myInput = document.createElement("input");
+        myInput.type = "text";
+        myInput.id = "myinput";
+        myInput.style.cssText = "margin: 4px 4px 4px 0; padding: 6px 8px; font-size: 14px; border: 2px solid #345; border-radius: 4px;";
+        myInput.placeholder="Введите значение";
+        myInput.value = "";
+        document.getElementById("mylist").after(myInput);
+
+        let btnAdd = document.createElement("button");
+        btnAdd.innerHTML = "Add";
+        btnAdd.id = "btn-add";
+        btnAdd.style.cssText = "margin: 4px; padding: 6px 8px; font-size: 14px; border: 2px solid #345; border-radius: 4px;";
+        document.getElementById("myinput").after(btnAdd);
+        btnAdd.onclick = addLi;
+
+        let btnRemove = document.createElement("button");
+        btnRemove.innerHTML = "Remove";
+        btnRemove.id = "btn-remove";
+        btnRemove.style.cssText = "margin: 4px; padding: 6px 8px; font-size: 14px; border: 2px solid #345; border-radius: 4px;";
+        document.getElementById("btn-add").after(btnRemove);
+        btnRemove.onclick = removeLi;
+
+        function addLi() {
+            if (document.getElementById("myinput").value !== "") {
+                let dynamicLi = document.createElement("li");
+                dynamicLi.innerHTML = document.getElementById("myinput").value;
+                document.getElementById("mylist").appendChild(dynamicLi);
+                document.getElementById("myinput").value = "";
+                dynamicLi.onclick = editLi;
+                document.getElementById("btn-remove").disabled = false;
+            }
+        }
+
+        for (let i = 0; i < document.querySelectorAll("li").length; i++) {
+            let li = document.querySelectorAll("li")[i];
+            li.onclick = editLi;
+        }
+
+        function editLi() {
+            let liContent = this.innerHTML;
+            let liInput = document.createElement("input");
+            liInput.type = "text";
+            liInput.value = liContent;
+            this.innerHTML = "";
+            this.append(liInput)
+            liInput.focus();
+            liInput.addEventListener("click", function(e){
+                e.stopPropagation();
+            });
+            liInput.onblur = updateLi;
+        }
+
+        function updateLi() {
+            let liInputVal = this.value;
+            this.parentNode.innerHTML = liInputVal;
+            document.getElementById("btn-remove").disabled = false;
+        }
+
+        function removeLi() {
+            let liAll = document.querySelectorAll("li");
+            let lastLi = liAll[liAll.length-1];
+            if (liAll.length == 1) {
+                document.getElementById("btn-remove").disabled = true;
+            } else {
+                document.getElementById("btn-remove").disabled = false;
+            }
+            mylist.removeChild(lastLi);
+        }
+
+    </script>
+</body>
+</html>
