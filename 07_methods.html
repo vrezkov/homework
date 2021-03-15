@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        const numbers = [2, 3, 5, 7, 11, 13, 17];
+        function currentSums(numbers) {
+            let decomp = [];
+            let res = [];
+            numbers.reduce(function(sum, current, index) {
+                if (index === 0) {
+                    decomp.push(current);
+                } else {
+                    decomp.push(decomp[index-1]+"+"+current);
+                }
+                res.push(sum+current);
+                return sum+current;
+            }, 0);
+            console.log("["+decomp.join(", ")+"] = ["+res.join(", ")+"]");
+        }
+        currentSums(numbers);
+
+      
+        let str = "Каждый охотник желает знать, где сидит фазан.";
+        let newArr = firstLettersFromString(str);
+        function firstLettersFromString(str) {
+            return (
+                str.split(" ").map(function(letter) {
+                    return letter[0];
+                })
+            )
+        }
+        console.log(newArr); // [К,о,ж,з,г,с,ф]
+
+        
+        let startArray = [-1, 2, 3.5, -12, 4, 1.25, 16]; 
+        let newArray = filteredArray(startArray);
+        function filteredArray(startArray) {
+            return (
+                startArray.filter(function(num) {
+                    if (num <= 1) {
+                        return false;
+                    } else if (num % 1 !== 0) {
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                })
+            )
+        }
+        console.log(newArray); // [2, 4, 16]
+
+
+        function changeArray(myArr) {
+            let myArrleft = [], myArrMid = [], myArrRight = [], result = [];
+            myArrMid = myArr[Math.floor((myArr.length - 1) / 2)];
+            myArrLeft = myArr.slice(0, Math.floor(myArr.length / 2));
+            myArrRight = myArr.slice(Math.ceil(myArr.length / 2), myArr[myArr.length - 1]);
+            if (myArr.length % 2 !== 0) {
+                result = myArrRight.concat(myArrMid, myArrLeft);
+            } else {
+                result = myArrRight.concat(myArrLeft); 
+            }          
+            console.log(result);
+        }
+        changeArray([ 1, 2, 3, 4, 5 ]); // [ 4, 5, 3, 1, 2 ]
+        changeArray([ 1, 2 ]); // [ 2, 1 ] 
+        changeArray([ 1, 2, 3, 4, 5, 6, 7, 8]);  // [ 5, 6, 7, 8, 1, 2, 3, 4 ]
+
+     </script>
+</body>
