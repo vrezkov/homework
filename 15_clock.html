@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+
+//                  *(nx, ny)
+//              .
+//           .
+//       .
+//    .  angle
+// *(x, y)  .  .  .  .
+//
+// circle = 2 * Pi * radians
+// circle = 360 degrees
+// 1 radian = (Math.PI / 180) * angle
+// cos = Math.cos(radians)
+// sin = Math.sin(radians)
+
+  // ======= Body style =======
+  document.body.style.cssText = "height: 100%; min-height: 100%; margin: 0 auto; background-color: #111;";
+
+  // ======= Clock wrapper =======
+  let clockWrapper = document.createElement("div");
+  clockWrapper.id = "clock-wrapper";
+  clockWrapper.style.cssText = `width: 460px; height: 460px; position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0; margin: auto;`;
+  document.body.append(clockWrapper);
+
+  // ======= Clock face wrapper =======
+  let clockWrapperHeight = parseInt(clockWrapper.style.height);
+  let clockFaceWrapperBorderWidth = 2;
+  let clockFaceWrapperPadding = 35;
+  let clockFaceWrapper = document.createElement("div");
+  clockFaceWrapper.id = "clock-face-wrapper";
+  clockFaceWrapper.style.cssText = `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    border: ${clockFaceWrapperBorderWidth + "px"} solid #fff; border-radius: 50%; padding: ${clockFaceWrapperPadding + "px"};
+    width: ${clockWrapperHeight + "px"}; height: ${clockWrapperHeight + "px"};
+    background-color: #123; box-sizing: border-box; box-shadow: inset 0 0 20px 5px #ccc;`;
+  clockWrapper.append(clockFaceWrapper);
+
+  // ======= Clock face =======
+  let clockFaceWrapperHeight = parseInt(clockFaceWrapper.style.height);
+  let clockFace = document.createElement("div");
+  clockFace.id = "clock-face";
+  clockFace.style.cssText = `position: relative; border-radius: 50%; box-sizing: border-box; 
+    width: ${clockFaceWrapperHeight - clockFaceWrapperPadding * 2 - clockFaceWrapperBorderWidth * 2 + "px"};
+    height: ${clockFaceWrapperHeight - clockFaceWrapperPadding * 2 + - clockFaceWrapperBorderWidth * 2 + "px"};`;
+  clockFaceWrapper.append(clockFace);
+
+  // ======= Clock tick circles and numbers =======
+  let clockTickCircles = [], clockTickNumbers = [];
+
+  for (let i = 0; i < 12; i++){
+
+    let angle = 330 - (i * (360 / 12));
+    let radian = angle * Math.PI / 180;
+
+    // ======= Clock tick circles =======
+    let clockFaceHeight = parseInt(clockFace.style.height);   
+    let clockFaceRadius = clockFaceHeight / 2;
+    let ownRadius = 24;
+
+    let clockTickCircle = document.createElement("div");
+    clockTickCircle.className = "clock-tick-circle";    
+    clockTickCircle.style.cssText = `position: absolute; background-color: #ccc; border-radius: 50%; 
+      width: ${ownRadius * 2 + "px"}; height: ${ownRadius * 2 + "px"};
+      top: ${(clockFaceRadius - (clockFaceRadius - ownRadius) * Math.cos(radian))+"px"};
+      left: ${(clockFaceRadius - (clockFaceRadius - ownRadius) * Math.sin(radian))+"px"};
+     transform: translate(-50%, -50%);`;
+    clockTickCircles.push(clockTickCircle);
+    clockFace.append(clockTickCircles[i]);
+
+    // ======= Clock tick numbers =======
+    let clockTickNumber = document.createElement("div");
+    clockTickNumber.className = "clock-tick-number";
+    clockTickNumber.innerHTML = i + 1;
+    clockTickNumber.style.cssText = `font-size: 28px; font-weight: 700; color: #123;
+    font-family: Arial, Helvetica, sans-serif; text-align: center; vertical-align: middle; line-height: 48px;`;
+    clockTickNumbers.push(clockTickNumber);
+    clockTickCircles[i].append(clockTickNumbers[i]);
+    
+  }
+
+  // ======= Hours hand =======
+  let handHours = document.createElement("div");
+  handHours.id = "hand-hours";
+  handHours.style.cssText = `position: absolute; bottom: 50%; left: 50%;
+    width: 10px; height: 120px; margin-left: -5px; border-radius: 5px; background-color: #ccc;
+    transform-origin: center bottom;`;
+  document.querySelector("#clock-face").append(handHours);
+
+  // ======= Minutes hand =======
+  let handMinutes = document.createElement("div");
+  handMinutes.id = "hand-minutes";
+  handMinutes.style.cssText = `position: absolute; bottom: 50%; left: 50%;
+    width: 8px; height: 140px; margin-left: -4px; border-radius: 4px; background-color: #000;
+    transform-origin: center bottom;`;
+  document.querySelector("#clock-face").append(handMinutes);
+
+  // ======= Seconds hand =======
+  let handSeconds = document.createElement("div");
+  handSeconds.id = "hand-seconds";
+  handSeconds.style.cssText = `position: absolute; bottom: 50%; left: 50%;
+    width: 2px; height: 160px; margin-left: -1px; border-radius: 1px; background-color: #ff0000;
+    transform-origin: center bottom;`;
+  document.querySelector("#clock-face").append(handSeconds);
+
+  // ======= Screw =======
+  let screw = document.createElement("div");
+  screw.id = "screw";
+  screw.style.cssText = `position: absolute; top: 50%; left: 50%;
+    width: 16px; height: 16px; border-radius: 50%; background-color: #555;
+    transform: translate(-50%, -50%);`;
+  document.querySelector("#clock-face").append(screw);
+
+  function setTime() {
+
+    const now = new Date();
+    
+    // ======= Seconds =======
+    let seconds = now.getSeconds();
+    let secondsDegree = (seconds / 60) * 360;
+    handSeconds.style.transform = `rotate(${secondsDegree}deg) translateY(20px)`;
+
+    // ======= Minutes =======
+    let minutes = now.getMinutes();
+    let minutesDegree = (minutes / 60) * 360;
+    handMinutes.style.transform = `rotate(${minutesDegree}deg) translateY(15px)`;
+
+    // ======= Hours =======
+    let hours = now.getHours();
+    let hoursDegree = ((hours + minutes / 60) / 12) * 360;
+    handHours.style.transform = `rotate(${hoursDegree}deg) translateY(15px)`;
+
+  }
+
+  setInterval(setTime, 1000 / 60);
+
+</script>
+
+</body>
+</html>
