@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+	function compress(str){
+		let result = "";
+		let myObj = {};
+		for (let i = 0; i < str.length; i++){
+			let strChar = str[i];
+			charCount = myObj[strChar];
+			if (charCount) {
+				myObj[strChar]++;
+			} else {
+				myObj[strChar] = 1;
+			}
+		}
+		for (let key in myObj) {
+			if (str.length == 1) {
+				result = key;
+			} else {
+				result += key+myObj[key];
+			}
+		}
+		console.log(`${str} => ${result}`);
+	}
+	
+	compress("a");
+	compress("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	compress("aabbb");
+	compress("aaabcc");
+
+
+	function uncompress(str){
+		let myArr = str.split("");
+		let myArrChar = str[0];
+		let myArrDigit = "";
+		let result = "";
+		if (myArr.length === 1) {
+			result = myArrChar + 1;
+		} else {
+			for (let i = 1; i < myArr.length; i++){
+				if (!isNaN(myArr[i])) {
+					myArrDigit += myArr[i];
+				} else {
+					result += myArrChar.repeat(+myArrDigit);
+					myArrChar = myArr[i];
+					myArrDigit = "";
+				}
+			}
+			result += myArrChar.repeat(+myArrDigit);
+		}
+		console.log(`${str} => ${result}`);
+	}
+
+	uncompress("a");
+	uncompress("a5");
+	uncompress("a12b3");
+	uncompress("a120b1c1113");
+
+    </script>
+</body>
+</html>
