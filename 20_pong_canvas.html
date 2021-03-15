@@ -9,8 +9,8 @@
     
 <script>
 
-  const canvasWidth = 634;
-  const canvasHeight = 474;
+    const canvasWidth = 634;
+    const canvasHeight = 474;
 	
 	const centerX = canvasWidth / 2;
 	const centerY = (canvasHeight + 50) / 2 ;
@@ -97,6 +97,9 @@
 	function clickBtnStart(e) {
 		if (e.clientX >= btnStartX1 && e.clientX <= btnStartX2 && e.clientY >= btnStartY1 && e.clientY <= btnStartY2) {
 			canvas.removeEventListener("click", clickBtnStart);
+			p1Score = 0;
+			p2Score = 0;
+			drawScore();
 			gameStart();
 		}
 	}
