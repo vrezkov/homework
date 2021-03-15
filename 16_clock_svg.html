@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+
+  // circle = 2 * Pi * radians
+  // circle = 360 degrees
+  // 1 radian = angle * (Pi / 180)
+
+function createClock() {
+
+  // Style body
+  document.body.style.cssText = `height: 100vh; min-height: 100vh; margin: 0 auto; background-color: #111;
+    display: flex; align-items: center; justify-content: center;`;
+
+  // variable for the namespace
+  const svgns = "http://www.w3.org/2000/svg";
+
+  let svg = document.createElementNS(svgns, "svg");
+  svg.setAttributeNS(null, "id", "clock-svg");
+  svg.setAttributeNS(null, "viewBox", "0 0 460 460");
+  svg.setAttributeNS(null, "width", "460");
+  svg.setAttributeNS(null, "height", "460");
+  // svg.style = "position: absolute; margin: auto; top: 0; right: 0; bottom: 0; left: 0;";
+  document.body.appendChild(svg);
+
+  // variables for svg width and height
+  let svgWidth = parseFloat(svg.getAttributeNS(null, "width"));
+  let svgHeight = parseFloat(svg.getAttributeNS(null, "height"));
+
+  // ======= Clock face wrapper =======
+  let clockFaceWrapperBorder = 2;
+  let clockFaceWrapper = document.createElementNS(svgns, "circle");
+  clockFaceWrapper.setAttributeNS(null, "id", "clock-face-wrapper");
+  clockFaceWrapper.setAttributeNS(null, "cx", svgWidth / 2);
+  clockFaceWrapper.setAttributeNS(null, "cy", svgHeight / 2);
+  clockFaceWrapper.setAttributeNS(null, "r", svgWidth / 2 - clockFaceWrapperBorder);
+  clockFaceWrapper.setAttributeNS(null, "fill", "#123");
+  clockFaceWrapper.setAttributeNS(null, "stroke", "#fff");
+  clockFaceWrapper.setAttributeNS(null, "stroke-width", clockFaceWrapperBorder);
+  svg.appendChild(clockFaceWrapper);
+
+  // ======= Clock face =======
+  let clockFaceMargin = 35;
+  let clockFace = document.createElementNS(svgns, "circle");
+  clockFace.setAttributeNS(null, "id", "clock-face");
+  clockFace.setAttributeNS(null, "cx", svgWidth / 2);
+  clockFace.setAttributeNS(null, "cy", svgHeight / 2);
+  clockFace.setAttributeNS(null, "r", svgWidth / 2 - clockFaceWrapperBorder - clockFaceMargin);
+  clockFace.setAttributeNS(null, "fill", "#123");
+  svg.appendChild(clockFace);
+
+  // ======= Clock tick circles and numbers =======
+  for (let i = 0; i < 12; i++){
+
+    let angle = 120 + (i * (360 / 12));
+    let radian = angle * Math.PI / 180;
+    let parentRadius = parseFloat(clockFace.getAttributeNS(null, "r"));
+    let ownRadius = 24;
+
+    // ======= Clock tick circles =======
+    let clockTickCircle = document.createElementNS(svgns, "circle");
+    clockTickCircle.setAttributeNS(null, "class", "clock-tick-wrapper");
+    clockTickCircle.setAttributeNS(null, "cx", `${((svgWidth / 2) - (parentRadius - ownRadius) * Math.cos(radian))}`);
+    clockTickCircle.setAttributeNS(null, "cy", `${((svgHeight / 2) - (parentRadius - ownRadius) * Math.sin(radian))}`);
+    clockTickCircle.setAttributeNS(null, "r", ownRadius);
+    clockTickCircle.setAttributeNS(null, "fill", "#ccc");
+
+    // ======= Clock tick numbers =======
+    let clockTickNumber = document.createElementNS(svgns, "text");
+    clockTickNumber.textContent = i + 1;
+    clockTickNumber.setAttributeNS(null, "x", `${((svgWidth / 2) - (parentRadius - ownRadius) * Math.cos(radian))}`);
+    clockTickNumber.setAttributeNS(null, "y", `${((svgHeight / 2) - (parentRadius - ownRadius) * Math.sin(radian))}`);
+    clockTickNumber.setAttributeNS(null, "width", "48");
+    clockTickNumber.setAttributeNS(null, "height", "48");
+    clockTickNumber.setAttributeNS(null, "fill", "#123");
+    clockTickNumber.setAttributeNS(null, "alignment-baseline", "central");
+    clockTickNumber.setAttributeNS(null, "text-anchor", "middle");
+    clockTickNumber.setAttributeNS(null, "font-family", "Arial");
+    clockTickNumber.setAttributeNS(null, "font-size", "28");
+    clockTickNumber.setAttributeNS(null, "font-weight", "700");
+
+    svg.appendChild(clockTickCircle);
+    svg.appendChild(clockTickNumber);
+  }
+
+  // ======= Hand for hours =======
+  let handHours = document.createElementNS(svgns, "rect");
+  handHours.setAttributeNS(null, "id", "hand-hours");
+  handHours.setAttributeNS(null, "x", svgWidth / 2 - 5);
+  handHours.setAttributeNS(null, "y", svgHeight / 2 - 15);
+  handHours.setAttributeNS(null, "rx", "5");
+  handHours.setAttributeNS(null, "ry", "5");
+  handHours.setAttributeNS(null, "width", "10");
+  handHours.setAttributeNS(null, "height", "120");
+  handHours.setAttributeNS(null, "fill", "#ccc");
+  svg.appendChild(handHours);
+
+  // ======= Hand for minutes =======
+  let handMinutes = document.createElementNS(svgns, "rect");
+  handMinutes.setAttributeNS(null, "id", "hand-minutes");
+  handMinutes.setAttributeNS(null, "x", svgWidth / 2 - 4);
+  handMinutes.setAttributeNS(null, "y", svgHeight / 2 - 15);
+  handMinutes.setAttributeNS(null, "rx", "4");
+  handMinutes.setAttributeNS(null, "ry", "4");
+  handMinutes.setAttributeNS(null, "width", "8");
+  handMinutes.setAttributeNS(null, "height", "140");
+  handMinutes.setAttributeNS(null, "fill", "#000");
+  svg.appendChild(handMinutes);
+
+  // ======= Hand for seconds =======
+  let handSeconds = document.createElementNS(svgns, "rect");
+  handSeconds.setAttributeNS(null, "id", "hand-seconds");
+  handSeconds.setAttributeNS(null, "x", svgWidth / 2 - 1);
+  handSeconds.setAttributeNS(null, "y", svgHeight / 2 - 20);
+  handSeconds.setAttributeNS(null, "rx", "1");
+  handSeconds.setAttributeNS(null, "ry", "1");
+  handSeconds.setAttributeNS(null, "width", "2");
+  handSeconds.setAttributeNS(null, "height", "160");
+  handSeconds.setAttributeNS(null, "fill", "#ff0000");
+  svg.appendChild(handSeconds);
+
+  // ======= Screw =======
+  let screw = document.createElementNS(svgns, "circle");
+  screw.setAttributeNS(null, "id", "screw");
+  screw.setAttributeNS(null, "cx", svgWidth / 2);
+  screw.setAttributeNS(null, "cy", svgHeight / 2);
+  screw.setAttributeNS(null, "r", "8");
+  screw.setAttributeNS(null, "fill", "#555");
+  svg.appendChild(screw);
+
+  // ======= Digital clock numbers =======
+  let digitalClock = document.createElementNS(svgns, "text");
+  let digitalClockWidth = 140;
+  let digitalClockHeight = 60;
+  digitalClock.setAttributeNS(null, "id", "digital-clock");
+  digitalClock.setAttributeNS(null, "x", svgWidth / 2);
+  digitalClock.setAttributeNS(null, "y", svgHeight / 2 - svgHeight / 6 );
+  digitalClock.setAttributeNS(null, "width", digitalClockWidth);
+  digitalClock.setAttributeNS(null, "height", digitalClockHeight);
+  digitalClock.setAttributeNS(null, "fill", "#fff");
+  digitalClock.setAttributeNS(null, "alignment-baseline", "central");
+  digitalClock.setAttributeNS(null, "text-anchor", "middle");
+  digitalClock.setAttributeNS(null, "font-family", "Courier New");
+  digitalClock.setAttributeNS(null, "font-size", "28");
+  svg.appendChild(digitalClock);
+
+}
+
+function setTime() {
+
+  let svg = document.querySelector("#clock-svg");
+  let svgWidth = parseFloat(svg.getAttributeNS(null, "width"));
+  let svgHeight = parseFloat(svg.getAttributeNS(null, "height"));
+
+  const now = new Date();
+
+  // ======= Seconds =======
+  let seconds = now.getSeconds();
+  let secondsDegree = (seconds / 60) * 360 + 180;
+  svg.querySelector("#hand-seconds").setAttributeNS(null, 'transform', `rotate(${secondsDegree} ${svgWidth / 2} ${svgHeight / 2})`);
+
+  // ======= Minutes =======
+  let minutes = now.getMinutes();
+  let minutesDegree = (minutes / 60) * 360 + 180;
+  svg.querySelector("#hand-minutes").setAttributeNS(null, 'transform', `rotate(${minutesDegree} ${svgWidth / 2} ${svgHeight / 2})`);
+
+  // ======= Hours =======
+  let hours = now.getHours();
+  let hoursDegree = ((hours + minutes / 60) / 12) * 360 + 180;
+  svg.querySelector("#hand-hours").setAttributeNS(null, 'transform', `rotate(${hoursDegree} ${svgWidth / 2} ${svgHeight / 2})`);
+
+  // ======= Digital clock =======
+  let dSeconds, dMinutes, dHours;
+
+    // ======= Seconds =======
+    if (seconds < 10) {
+      dSeconds = "0" + seconds;
+    } else {
+      dSeconds = seconds;
+    }
+
+    // ======= Minutes =======
+    if (minutes < 10) {
+      dMinutes = "0" + minutes;
+    } else {
+      dMinutes = minutes;
+    }
+
+    // ======= Hours =======
+    if (hours < 10) {
+      dHours = "0" + hours;
+    } else {
+      dHours = hours;
+    }
+  svg.querySelector("#digital-clock").textContent = `${dHours}:${dMinutes}:${dSeconds}`;
+
+}
+
+createClock();
+setInterval(setTime, 1000 / 60);
+
+</script>
+
+</body>
+</html>
